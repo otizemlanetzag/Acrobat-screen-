@@ -1,0 +1,11 @@
+{
+    "name": "acrobat screen",
+    "version": "0.0.1",
+    "description": "My amazing extension built online",
+    "files": [
+        "main.ts"
+    ],
+    "dependencies": {
+        "core": "*"
+    }
+}
