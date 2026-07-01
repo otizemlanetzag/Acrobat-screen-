@@ -7,45 +7,38 @@ namespace imageArrayMerger {
      * @param imageList מערך (רשימה) של תמונות לשילוב
      * @param duration הזמן במילשניות להצגת התמונה לפני מחיקה, eg: 1000
      */
-    //% block="מזג והצג מערך תמונות %imageList"
+    //% block="מזג והצג מערך תמונות %imageList || בזמן תצוגה של %duration מילישניות"
     //% expandableArgumentMode="toggle"
-    //% duration.block="זמן הצגה (ms)"
+    //% duration.shadow=timePicker
     export function mergeAndShowArray(imageList: Image[], duration?: number): void {
-        // הגנה מפני מערך ריק
+        // הגנה ראשונית - אם המערך ריק או לא קיים, אל תעשה כלום
         if (!imageList || imageList.length == 0) return
 
-        // יצירת תצוגת בסיס ריקה (כל הלדים כבויים)
-        let finalImage = images.createImage(`
-            . . . . .
-            . . . . .
-            . . . . .
-            . . . . .
-            . . . . .
-        `)
+        // ניקוי זמני של המסך כדי לבנות את השכבות מחדש
+        basic.clearScreen()
 
-        // לולאה שעוברת על כל ה-X וה-Y של מסך הלדים (5x5)
+        // לולאה כפולה שרצה על כל 25 הלדים של המיקרוביט (מטריצה של 5 על 5)
         for (let y = 0; y < 5; y++) {
             for (let x = 0; x < 5; x++) {
                 
-                // לולאה שעוברת על כל התמונות שקיבלנו במערך
-                for (let img of imageList) {
-                    // אם הלד דולק בתמונה הנוכחית
-                    if (img.pixel(x, y)) {
-                        finalImage.setPixel(x, y, true) // נדליק אותו בתמונה הסופית
-                        break // מצאנו שהלד דולק, עוברים ללד הבא
+                // לולאה פנימית שרצה על כל התמונות שקיבלנו בתוך המערך
+                for (let i = 0; i < imageList.length; i++) {
+                    let currentImage = imageList[i]
+                    
+                    // בדיקה האם הפיקסל הנוכחי דולק בתמונה הזו
+                    if (currentImage.pixel(x, y)) {
+                        led.plot(x, y) // הדלקת הלד ישירות על מסך המיקרוביט
+                        break // מצאנו שהלד דולק באחת התמונות, אין צורך לבדוק את השאר עבור פיקסל זה
                     }
                 }
 
             }
         }
 
-        // הצגת התוצאה הסופית המשולבת על מסך המיקרוביט
-        finalImage.showImage(0)
-
-        // אם המשתמש לחץ על + והגדיר זמן (duration קבוע וגדול מ-0)
+        // טיפול בזמן ההצגה ומחיקת המסך (אם המשתמש פתח את ה-+ והגדיר זמן)
         if (duration !== undefined && duration > 0) {
-            basic.pause(duration) // נמתין את הזמן המבוקש
-            basic.clearScreen()    // נמחק את המסך
+            basic.pause(duration) // השהיית התוכנית למשך הזמן שנקבע
+            basic.clearScreen()    // כיבוי כל הלדים
         }
     }
 }
