@@ -33,6 +33,43 @@ namespace imageArrayMerger {
     }
 
     /**
+     * מקבל מחרוזת טקסט וממיר אותה למערך של תמונות (כל אות היא תמונה נפרדת) לפי הפונט המובנה
+     * @param text הטקסט שאותו נרצה להפוך למערך תמונות, eg: "ABC"
+     */
+    //% block="המר טקסט %text למערך תמונות"
+    //% text.defl="ABC"
+    export function convertTextToImages(text: string): Image[] {
+        let resultImages: Image[] = []
+        if (!text) return resultImages
+
+        for (let i = 0; i < text.length; i++) {
+            let char = text.charAt(i)
+            
+            let charImage = images.createImage(`
+                . . . . .
+                . . . . .
+                . . . . .
+                . . . . .
+                . . . . .
+            `)
+
+            let fontImage = images.fontImage(char)
+            if (fontImage) {
+                for (let y = 0; y < 5; y++) {
+                    for (let x = 0; x < 5; x++) {
+                        if (fontImage.pixel(x, y)) {
+                            charImage.setPixel(x, y, true)
+                        }
+                    }
+                }
+                resultImages.push(charImage)
+            }
+        }
+
+        return resultImages
+    }
+
+    /**
      * מקבל מחרוזת טקסט בעברית וממיר אותה למערך של תמונות פיקסל לפי סדר האותיות שתספק
      * @param text הטקסט להמרה, eg: "אבא"
      * @param alphabetOrder רשימת משתני האותיות שלך לפי הסדר (א עד ת)
@@ -49,7 +86,7 @@ namespace imageArrayMerger {
             let index = lettersStr.indexOf(char)
             
             if (index !== -1 && alphabetOrder[index]) {
-                resultImages.push(alphabetOrder[index]);
+                resultImages.push(alphabetOrder[index])
             }
         }
         return resultImages
